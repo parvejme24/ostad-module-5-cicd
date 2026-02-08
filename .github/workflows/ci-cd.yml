@@ -23,7 +23,7 @@ jobs:
         run: npm install
 
       - name: Run Tests
-        run: echo "All tests passed" > test-results.txt
+        run: npm run test
 
       - name: Upload Test Artifact
         uses: actions/upload-artifact@v4
@@ -40,6 +40,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Install Dependencies
+        run: npm install
+
       - name: Download Test Artifact
         uses: actions/download-artifact@v4
         with:
@@ -50,5 +53,8 @@ jobs:
 
       - name: Deploy Application
         run: |
-          echo "Deploying application on self-hosted runner"
-          echo "Deployment successful"
+          echo "Deploying Node/Express app via PM2"
+          npm install pm2 -g
+          pm2 stop node-express-app || true
+          pm2 start src/server.js --name "node-express-app"
+          pm2 save
